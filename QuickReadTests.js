@@ -1,18 +1,18 @@
 'use strict';
 
-var OmniClient = require('./lib/OmniClient.js').OmniClient;
-var fs = require('fs');
+let OmniClient = require('./lib/OmniClient.js').OmniClient;
+let fs = require('fs');
 
-var configurationFile = 'configuration.json';
-var configuration = JSON.parse(
+let configurationFile = 'configuration.json';
+let configuration = JSON.parse(
     fs.readFileSync(configurationFile)
 );
 
-var address = OmniClient.testNet.exodusAddress;
-var ids = [];
-var account;
+let address = OmniClient.testNet.exodusAddress;
+let ids = [];
+let account;
 
-var client = new OmniClient({host:'localhost',
+let client = new OmniClient({host:'localhost',
                           port:18332,
                           user: configuration.rpcuser,
                           pass: configuration.rpcpassword});
@@ -32,7 +32,7 @@ client.getBlockchainInfo()
   })
   .then( balances => {
     console.log("== balances for %s: %j\n", address, balances);
-    for (var i=0; i<balances.length; i++)  {
+    for (let i=0; i<balances.length; i++)  {
       ids.push(balances[i]['propertyid'])
     }
     console.log("== ids:\n", ids);

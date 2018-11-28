@@ -4,22 +4,22 @@
  */
 'use strict';
 
-var OmniClient = require('../lib/OmniClient.js').OmniClient;
-var OmniTestEnvironment = require('../lib/OmniTestEnvironment.js').OmniTestEnvironment;
-var fs = require('fs');
+const OmniClient = require('../lib/OmniClient.js').OmniClient;
+const OmniTestEnvironment = require('../lib/OmniTestEnvironment.js').OmniTestEnvironment;
+const fs = require('fs');
 
-var configurationFile = 'configuration.json';
-var configuration = JSON.parse(
+const configurationFile = 'configuration.json';
+const configuration = JSON.parse(
   fs.readFileSync(configurationFile)
 );
 
 console.log("Init client");
-var client = new OmniClient({host:'localhost',
+const client = new OmniClient({host:'localhost',
   port:18332,
   user: configuration.rpcuser,
   pass: configuration.rpcpassword});
 
 console.log("Init test env");
-var testEnv = new OmniTestEnvironment(client);
+const testEnv = new OmniTestEnvironment(client);
 testEnv.initRegTest();
 

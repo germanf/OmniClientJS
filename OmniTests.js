@@ -147,7 +147,10 @@ function nextOrder(id1) {
   //STP.pairs.push(pair)
   //console.log(address+' '+id1+' '+rand+' '+id2+' '+rand2)
   Omni.sendtrade(address, id1, rand, id2, rand2, (err, data) => {
-    if (err) throw err;
+    if (err) {
+      console.log(err);
+      return err;
+    };
     
     const trade = {
       address: address,

@@ -41,22 +41,17 @@ let nthTrade = 0;
 let account = 0;
 
 
-Omni.listaccounts(function(accounts) {
+Omni.listaccounts((err, accounts) => {
   console.log(accounts);
   account = accounts[0]
 });
 
-Omni.getnewaddress(account, function(newAddress) {
+Omni.getnewaddress(account, (err, newAddress) => {
   console.log(newAddress);
   address2 = newAddress
 });
 
-/*fs.readFile('testTrades.json', function(data){
-    trades = JSON.parse(data)
-})*/
-
-
-Omni.getallbalancesforaddress(address, function(data) {
+Omni.getallbalancesforaddress(address, (err, data) =>{
   balances = data;
   //console.log(balances)
   for(let i = 2; i < data.length; i++) {
@@ -65,7 +60,7 @@ Omni.getallbalancesforaddress(address, function(data) {
   console.log(ids)
 });
 
-function nameGen() {
+const nameGen=() =>{
   let alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
   let vowels = ['a', 'e', 'i', 'o', 'u'];
   let max = Math.round(Math.random() * 3) + 2;
@@ -87,23 +82,21 @@ function nameGen() {
   return newName
 }
 
-function newProperty(cb) {
-  Omni.listproperties(function(data) {
+const newProperty=(cb) =>{
+  Omni.listproperties((err, data) => {
     let obj = JSON.stringify(data);
     STP.properties = data;
     let array = [];
     for(let i = 0; i < STP.properties.length; i++) {
       array.push(STP.properties[i].propertyid)
     }
-    array = array.sort(function(a, b) {
-      a - b
-    });
+    array = array.sort((a, b) => a - b);
     let value = data.length - 1;
     id = data[value].propertyid;
     console.log('id:' + id);
     
     
-    fs.writeFile('omnitestproperties.json', obj, function(err) {
+    fs.writeFile('omnitestproperties.json', obj, (err) => {
       if (err) {
         throw err
       }
@@ -112,7 +105,7 @@ function newProperty(cb) {
   })
 }
 
-function issueManaged() {
+const issueManaged=() =>{
   let newName = nameGen();
   let data = starWars();
   
@@ -128,18 +121,16 @@ function issueManaged() {
     data: data
   };
   
-  Omni.sendissuancemanaged(params, function(data) {
+  Omni.sendissuancemanaged(params, (err, data) => {
     //console.log('issueance cb'+data)
-    newProperty(function(id) {
+    newProperty((id) => {
       console.log('id check' + id);
-      Omni.sendgrant(address, address, id, '1000000', 'blah!', function(data) {
-        //console.log('initial grant:'+data)
-      })
+      Omni.sendgrant(address, address, id, '1000000', 'blah!', (err, data) => console.log('initial grant:' + data));
     })
   })
 }
 
-function nextOrder(id1) {
+const nextOrder=(id1) =>{
   let id2 = 2;
   let rand = Math.random() * 10000;
   let pair = [id1, id2];
@@ -150,8 +141,7 @@ function nextOrder(id1) {
     if (err) {
       console.log(err);
       return err;
-    };
-    
+    }
     const trade = {
       address: address,
       id1: id1,
@@ -174,20 +164,14 @@ function nextOrder(id1) {
   });
 }
 
-
-/*Omni.sendgrant(address, address, id1, rand, "blah!", function(data){
-console.log('grant'+t+JSON.stringify(data))
-})*/
-
-
-function orderBooks() {
+const orderBooks=() =>{
   for(let p = 2; p < length; p++) {
     let id1 = array[p]['propertyid'];
     let id2 = 2;
     if (id1 == id2 || id1 == 1) {
       //console.log('duplicate')
     } else {
-      Omni.getorderbook(id1, id2, function(data) {
+      Omni.getorderbook(id1, id2, (err, data) => {
         //console.log("Book"+JSON.stringify(data))
         if (data == undefined) {
         } else {
@@ -200,7 +184,7 @@ function orderBooks() {
 }
 
 
-function makeBook(data) {
+const makeBook=(data) =>{
   let book = { name: '', bids: [], asks: [] };
   
   for(let i = 0; i < data.length; i++) {
@@ -209,70 +193,51 @@ function makeBook(data) {
     let id1 = order['propertyidforsale'];
     let name1 = '';
     
-    Omni.getproperty(id1, function(data1) {
+    Omni.getproperty(id1, (err, data1) => {
       name1 = data1['name'];
-      book.name = name1
+      book.name = name1;
     });
     
     let id2 = order['propertyiddesired'];
     let name2 = '';
     
-    Omni.getproperty(id2, function(data2) {
-      name2 = data2['name']
+    Omni.getproperty(id2, (err, data2) => {
+      name2 = data2['name'];
     });
     
     let amtSale = parseFloat(order['amountforsale']);
     let amtDesired = parseFloat(order['amountdesired']);
     let unitPrice = amtSale / amtDesired;
     let bookEntry = [amtSale, unitPrice];
-    book.asks.push(bookEntry)
+    book.asks.push(bookEntry);
   }
-  let sortedAsk = book.asks.sort(function(a, b) {
-    return a - b
-  });
+  let sortedAsk = book.asks.sort((a, b) => a - b);
   //console.log(sortedAsk)
-  return sortedAsk
+  return sortedAsk;
 }
 
-/*Omni.listproperties(function(data){
-    let obj = JSON.stringify(data)
-    STP.properties = data
-    let array =[]
-    for(let i=0; i<STP.properties.length;i++){
-        array.push(STP.properties[i].propertyid)
-    }
-    array = array.sort(function(a,b){a-b})
-    let value = array.length - 1
-    
-    
-    fs.writeFile('omnitestproperties.json', obj, function(err){
-        if(err){throw err}
-    })
-})*/
-function loop(cb) {
+const loop = (cb) => {
   nthTrade = 0;
   nextOrder(ids[nthTrade]);
-  setTimeout(function() {
+  setTimeout(() => {
     //issueManaged()
-    Omni.getallbalancesforaddress(address, function(data) {
+    Omni.getallbalancesforaddress(address, (err, data) => {
       balances = data;
       console.log(data);
       for(let i = 2; i < data.length; i++) {
-        ids.push(balances[i]['propertyid'])
+        ids.push(balances[i]['propertyid']);
       }
     });
-    fs.writeFile('testTrades.json', JSON.stringify(trades), function(err) {
-      if (err) throw err
+    fs.writeFile('testTrades.json', JSON.stringify(trades), (err) => {
+      if (err) throw err;
     });
     
-    loop()
-  }, 60000)
+    loop();
+  }, 60000);
   
 }
 
-setTimeout(function() {
-  loop()
-}, 2000);
+setTimeout(loop, 2000);
 
 /*
 Array.prototype.pairs = function (func) {
